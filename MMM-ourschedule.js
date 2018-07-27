@@ -22,6 +22,7 @@ Module.register("MMM-ourschedule",{
 		this.days = []
 
 		this.ready = {}
+		this.ready['all'] = false
 		this.ready['state'] = false
 		this.ready['days'] = false
 
@@ -29,6 +30,20 @@ Module.register("MMM-ourschedule",{
 
 		this.day_names = ['Lun.', 'Mar.', 'Med.', 'Jeu.', 'Ven.', 'Sam.', 'Dim.']
 		this.month_names = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+
+		this.shifts = {
+			OFF: 0,
+			MORNING: 1,
+			DAY: 2,
+			EVENING: 3
+		}
+
+		this.shiftStyles = {
+			OFF: "unselected",
+			MORNING: "selectedmorning",
+			DAY: "selectedday",
+			EVENING: "selectedevening",
+		}
 
 		var self = this
 
@@ -55,15 +70,21 @@ Module.register("MMM-ourschedule",{
 		this.ready[item] = true
 
 		if (this.ready['state'] && this.ready['days']) {
+			this.ready['all'] = true
 			this.filler = 'Ready'
 		}
 
+		console.log("Updating dom")
 		this.updateDom()
 	},
 
 	getDom: function() {
 		var calendar = document.createElement("div")
-		calendar.appendChild(this.createTable())
+		if ( this.ready['all'] ) {
+			calendar.appendChild(this.createTable())
+		} else {
+			console.log("Not ready yet")
+		}
 		return calendar
 	},
 
@@ -97,6 +118,8 @@ Module.register("MMM-ourschedule",{
 					var day_of_month = day_object.getDate()
 					td.id = day_of_month
 					td.appendChild(document.createTextNode( day_of_month ) )
+
+					this.applyState(td)
 				}
 				tr.appendChild(td)
 			}
@@ -105,6 +128,37 @@ Module.register("MMM-ourschedule",{
 		tbl.appendChild(tbdy)
 
 		return tbl
+	},
+
+	clearClasses: function(td) {
+		td.classList.remove(this.shiftStyles.OFF)
+		td.classList.remove(this.shiftStyles.MORNING)
+		td.classList.remove(this.shiftStyles.DAY)
+		td.classList.remove(this.shiftStyles.EVENING)
+	},
+
+	applyState: function(td) {
+
+		var day_number = td.id
+		var day_index = day_number - 1
+
+		var state = this.state[day_index]['shift']
+
+		this.clearClasses(td)
+
+		if ( state == this.shifts.OFF ) {
+			td.classList.add(this.shiftStyles.OFF)
+		}
+		if ( state == this.shifts.MORNING ) {
+			td.classList.add(this.shiftStyles.MORNING)
+		}
+		if ( state == this.shifts.DAY ) {
+			td.classList.add(this.shiftStyles.DAY)
+		}
+		if ( state == this.shifts.EVENING ) {
+			td.classList.add(this.shiftStyles.EVENING)
+		}
+
 	},
 
 	getStyles: function() {
