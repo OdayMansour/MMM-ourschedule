@@ -27,6 +27,9 @@ Module.register("MMM-ourschedule",{
 
 		this.filler = 'Requesting...'
 
+		this.day_names = ['Lun.', 'Mar.', 'Med.', 'Jeu.', 'Ven.', 'Sam.', 'Dim.']
+		this.month_names = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+
 		var self = this
 
 		var request_state = new XMLHttpRequest();
@@ -60,8 +63,96 @@ Module.register("MMM-ourschedule",{
 
 	getDom: function() {
 		var calendar = document.createElement("div")
-		calendar.innerHTML = this.filler 
+		calendar.appendChild(this.createTable())
 		return calendar
-	}
+	},
+
+	createTable: function() {
+		var month_index = this.globals.month - 1
+
+		var tbl = document.createElement('table')
+		tbl.id = 'calendar-body'
+		tbl.style.width = '100%'
+		tbl.setAttribute('border', '1')
+		var tbdy = document.createElement('tbody')
+		var tr = document.createElement('tr')
+
+		for (var i = 0; i < this.day_names.length; i++ ) {
+			var th = document.createElement('th')
+			th.classList.add('day')
+			th.innerHTML = this.day_names[i]
+			tr.appendChild(th)
+		}
+
+		tbdy.appendChild(tr)
+
+		for (var i = 0; i < this.days.length; i++) {
+			var tr = document.createElement('tr')
+
+			for (var j = 0; j < this.days[i].length; j++) {
+				var td = document.createElement('td')
+
+				var day_object = new Date(this.days[i][j])
+
+				if ( day_object.getMonth() == month_index ) {
+
+					if ( day_object.getDay() == 0 || day_object.getDay() == 6 ) {
+						td.classList.add('weekend')
+					} 
+
+					var day_of_month = day_object.getDate()
+					td.id = day_of_month
+					td.appendChild(document.createTextNode( day_of_month ) )
+				}
+				tr.appendChild(td)
+			}
+			tbdy.appendChild(tr)
+		}
+		tbl.appendChild(tbdy)
+
+		return tbl
+	},
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
