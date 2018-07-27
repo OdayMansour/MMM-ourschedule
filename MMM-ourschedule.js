@@ -77,13 +77,6 @@ Module.register("MMM-ourschedule",{
 		var tbdy = document.createElement('tbody')
 		var tr = document.createElement('tr')
 
-		for (var i = 0; i < this.day_names.length; i++ ) {
-			var th = document.createElement('th')
-			th.classList.add('day')
-			th.innerHTML = this.day_names[i]
-			tr.appendChild(th)
-		}
-
 		tbdy.appendChild(tr)
 
 		for (var i = 0; i < this.days.length; i++) {
@@ -96,6 +89,7 @@ Module.register("MMM-ourschedule",{
 
 				if ( day_object.getMonth() == month_index ) {
 
+					td.classList.add('td_schedule')
 					if ( day_object.getDay() == 0 || day_object.getDay() == 6 ) {
 						td.classList.add('weekend')
 					} 
@@ -113,46 +107,9 @@ Module.register("MMM-ourschedule",{
 		return tbl
 	},
 
+	getStyles: function() {
+		return ['MMM-ourschedule.css']
+	},
+
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

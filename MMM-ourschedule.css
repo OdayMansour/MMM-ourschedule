@@ -1,0 +1,14 @@
+.weekend {
+	color: #ccc;
+}
+
+table, tr, td, th {
+	border: none;
+}
+
+.td_schedule {
+	padding: 3px 8px 3px 8px;
+	text-align: center;
+	font-size: 0.7em;
+	line-height: 1.3;
+}
