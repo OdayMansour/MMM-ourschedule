@@ -45,14 +45,18 @@ Module.register("MMM-ourschedule",{
 			EVENING: "selectedevening",
 		}
 
+		this.drawCalendar()
+		this.scheduleUpdate()
+	},
+
+	drawCalendar: function() {
 		var self = this
 
 		var request_state = new XMLHttpRequest();
 		request_state.open('GET', 'http://oday.nyc:1616/state/year/' + this.globals.year + '/month/' + this.globals.month, true);
 		request_state.onload = function () {
 			self.state = JSON.parse(this.responseText)
-			console.log(self.state)
-			self.reportReadiness('state')
+			self.drawWhenReady('state')
 		}
 		request_state.send();
 
@@ -60,13 +64,22 @@ Module.register("MMM-ourschedule",{
 		request_days.open('GET', 'http://oday.nyc:1616/days/year/' + this.globals.year + '/month/' + this.globals.month, true);
 		request_days.onload = function () {
 			self.days = JSON.parse(this.responseText)
-			console.log(self.days)
-			self.reportReadiness('days')
+			self.drawWhenReady('days')
 		}
 		request_days.send();
+
 	},
 
-	reportReadiness: function(item) {
+	redrawCalendar: function() {
+		this.ready['all'] = false
+		this.ready['state'] = false
+		this.ready['days'] = false
+
+		this.drawCalendar()
+		this.scheduleUpdate()
+	},
+
+	drawWhenReady: function(item) {
 		this.ready[item] = true
 
 		if (this.ready['state'] && this.ready['days']) {
@@ -74,8 +87,15 @@ Module.register("MMM-ourschedule",{
 			this.filler = 'Ready'
 		}
 
-		console.log("Updating dom")
 		this.updateDom()
+	},
+
+	scheduleUpdate: function() {
+		var self = this;
+		setTimeout(function() {
+			self.redrawCalendar()
+		}, 10 * 60 * 1000);
+
 	},
 
 	getDom: function() {
@@ -83,7 +103,7 @@ Module.register("MMM-ourschedule",{
 		if ( this.ready['all'] ) {
 			calendar.appendChild(this.createTable())
 		} else {
-			console.log("Not ready yet")
+			true
 		}
 		return calendar
 	},
